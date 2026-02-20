@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis Mobile Assistant</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #020617, #0f172a);
+        color: white;
+        text-align: center;
+    }
+
+    .container {
+        padding: 30px 15px;
+    }
+
+    h1 {
+        color: #38bdf8;
+        font-size: 32px;
+    }
+
+    #status {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #94a3b8;
+    }
+
+    button {
+        margin-top: 25px;
+        padding: 15px 25px;
+        font-size: 18px;
+        background: #22c55e;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+        background: #16a34a;
+        transform: scale(0.95);
+    }
+
+    .box {
+        margin-top: 30px;
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    h3 {
+        color: #38bdf8;
+        margin-bottom: 5px;
+    }
+
+    p {
+        font-size: 18px;
+        min-height: 24px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🤖 Jarvis Mobile Assistant</h1>
+    <p id="status">Tap the button and speak...</p>
+
+    <button onclick="startListening()">🎤 Start Jarvis</button>
+
+    <div class="box">
+        <h3>You said:</h3>
+        <p id="userText">...</p>
+
+        <h3>Jarvis Response:</h3>
+        <p id="jarvisText">Waiting...</p>
+    </div>
+</div>
+
+<script>
+function startListening() {
+    const status = document.getElementById("status");
+    const userText = document.getElementById("userText");
+    const jarvisText = document.getElementById("jarvisText");
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Your browser does not support voice recognition. Use Chrome on mobile.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+
+    status.innerText = "Listening... 🎧 Speak now";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        userText.innerText = transcript;
+        processCommand(transcript.toLowerCase());
+    };
+
+    recognition.onerror = function() {
+        status.innerText = "Error in voice recognition";
+    };
+
+    recognition.onend = function() {
+        status.innerText = "Tap the button and speak...";
+    };
+}
+
+function speak(text) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+    speech.rate = 1;
+    window.speechSynthesis.speak(speech);
+}
+
+function processCommand(command) {
+    const jarvisText = document.getElementById("jarvisText");
+    let response = "Sorry, I did not understand that.";
+
+    if (command.includes("hello") || command.includes("hi")) {
+        response = "Hello! I am Jarvis, your mobile assistant.";
+    }
+    else if (command.includes("time")) {
+        const time = new Date().toLocaleTimeString();
+        response = "The current time is " + time;
+    }
+    else if (command.includes("date") || command.includes("today")) {
+        const date = new Date().toDateString();
+        response = "Today is " + date;
+    }
+    else if (command.includes("open youtube")) {
+        response = "Opening YouTube";
+        window.open("https://www.youtube.com", "_blank");
+    }
+    else if (command.includes("open google")) {
+        response = "Opening Google";
+        window.open("https://www.google.com", "_blank");
+    }
+    else if (command.includes("calculator")) {
+        response = "Opening calculator";
+        window.open("https://www.google.com/search?q=calculator", "_blank");
+    }
+    else if (command.includes("who are you")) {
+        response = "I am Jarvis, your AI voice assistant running on your mobile.";
+    }
+    else if (command.includes("weather")) {
+        response = "Opening weather report";
+        window.open("https://www.google.com/search?q=weather", "_blank");
+    }
+
+    jarvisText.innerText = response;
+    speak(response);
+}
+</script>
+
+</body>
+</html>
